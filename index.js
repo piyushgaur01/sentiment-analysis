@@ -4,6 +4,20 @@ var helmet = require('helmet');
 var bodyParser = require('body-parser');
 var morgan = require('morgan');
 
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+
+    // intercept OPTIONS method
+    if ('OPTIONS' == req.method) {
+      res.send(200);
+    }
+    else {
+      next();
+    }
+};
+
 var app = new express();
 var port = process.env.PORT || 8080;
 
@@ -18,6 +32,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 
 app.use(morgan('combined'));
+
+app.use(allowCrossDomain);
 
 app.get('/', function(req, res){
     res.send('Default route of Sentiment Analysis API.');
